@@ -135,9 +135,11 @@ def draw_popup_text(text):
 
 # ゲームループ
 while True:
-    clicked_command = None  # クリックされたコマンドを保持する変数
 
+    clicked_command = None  # クリックされたコマンドを保持する変数
+    #イベントキューをチェックする
     for event in pygame.event.get():
+        #QUITならば
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
