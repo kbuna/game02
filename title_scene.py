@@ -2,7 +2,6 @@ import pygame
 import os
 
 
-
 #初期化関数
 color = 255,255,255
 #モデル
@@ -44,6 +43,11 @@ def draw_text(screen,text,font,color, x, y):
 # ボタンのクラス
 class Button:
     #ボタンは、矩形属性(x,y,w,h)、テキスト、ホバーしているか、ホバー前からの真偽値を持つ
+    #screenボタンが描画さっる対象の画面
+    #textボタンに表示されるテキスト
+    #fontテキストのフォント
+    #x,yボタンの右上隅の座標
+    #width heightボタンの幅と高さ
     def __init__(self,screen,text,font, x, y, width, height):
         self._rect = pygame.Rect(x, y, width, height)
         self._text = text
@@ -51,10 +55,11 @@ class Button:
         self._prev_hovered = False
         self.font = font
         self.screen = screen
-    #ボタンは上記の要素に加えて、色と、ホバー時のサウンドを使って描画される  
-     
-     
-    def draw(self,color, hover_sound=None):
+    #ボタンは上記の要素に加えて、色と、ホバー時のサウンドを使って描画される 
+    # ボタンの枠線の色、ホバーサウンド
+    def draw(self,color, hover_sound=None,rect_color=None):
+        if rect_color is not None:
+            pygame.draw.rect(self.screen, rect_color, self._rect)
         #テキストを描画する、色と、縦横の中心の位置を使って
         draw_text(self.screen,self._text, self.font,color,self._rect.centerx, self._rect.centery)
         #ボタンがサウンドを持っていて、ホバーしていて、ホバー前でないならば音を鳴らす
