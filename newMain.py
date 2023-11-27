@@ -99,7 +99,7 @@ def main():
             # タイトルロゴ表示
             screen.blit(img_title[0], [0, 0])
             screen.blit(img_title[1], [340, 80])
-
+            #hoberedの値を見て、三項演算子で、青か黒か。
             start_color = pygame.Color("blue") if start_button.hovered else pygame.Color("black")
             start_button.draw(start_color, hover_sound=hover_sound)
 
@@ -108,7 +108,7 @@ def main():
 
         #A2 ゲームスタート後ならこうする
         elif current_game_state == "start": # フレームカウントを更新します
-                ps.update_scene(screen, frame_count,move_frames,animation_frames,animation_counter)        
+                ps.update_scene(pygame,screen, frame_count,move_frames,animation_frames,animation_counter)        
                 print(frame_count)
 
                 #ps.update_scene(screen, frame_count,move_frames,animation_frames,animation_counter, camera_x, camera_y,camera_speed)

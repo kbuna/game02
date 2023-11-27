@@ -51,7 +51,9 @@ class Button:
         self._prev_hovered = False
         self.font = font
         self.screen = screen
-    #ボタンは上記の要素に加えて、色と、ホバー時のサウンドを使って描画される   
+    #ボタンは上記の要素に加えて、色と、ホバー時のサウンドを使って描画される  
+     
+     
     def draw(self,color, hover_sound=None):
         #テキストを描画する、色と、縦横の中心の位置を使って
         draw_text(self.screen,self._text, self.font,color,self._rect.centerx, self._rect.centery)
@@ -59,6 +61,7 @@ class Button:
         if hover_sound is not None and self._hovered and not self._prev_hovered:
             hover_sound.play()
     #プロパティ。ホバー以前にホバー状態の値を入れてから、ホバー状態かどうかを新たにセットする。
+    
     def set_hovered(self, value):
         self._prev_hovered = self._hovered
         self._hovered = value

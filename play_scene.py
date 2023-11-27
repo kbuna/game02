@@ -2,6 +2,9 @@
 import random
 import pygame
 import datetime
+import os
+from title_scene import Button,load_sound
+import sys
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -13,10 +16,12 @@ current_time = datetime.datetime(2023, 11, 11, 2, 32)
 frames_per_second = 60
 game_count =0
 
+double_speed_button = None
+half_speed_button = None
 
 dirty_rect = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 
-
+current_speed_state="1"
 
 
 
@@ -60,6 +65,8 @@ def update_timer():
     global current_time
     # 1分進める
     current_time += datetime.timedelta(minutes=1)
+
+
 
 # UIエリアにタイマーを表示する関数
 def draw_timer(screen, ui_area_height):
@@ -162,7 +169,16 @@ npc_images = {
 def lerp(a, b, t):
     return a + t * (b - a)
 
+    
+#SEファイルパスを読み込む
+def load_sound(file_path):
+    if os.path.exists(file_path):
+        return pygame.mixer.Sound(file_path)
+    else:
+        raise FileNotFoundError(f"File not found: {file_path}")
+pygame.mixer.init()
 
+hover_sound = load_sound("sound/hover.mp3")
 
 
 
@@ -251,17 +267,29 @@ for key, color in colours.items():
     isometric_tiles[key] = tile_surf
 
 
-
-
-
-
-
+def on_click(text):
+    print(f"{text} button clicked!")
+    # ここに倍速時の処理を追加
+    global frames_per_second
+    if text == "1":
+        frames_per_second *= 2
+    elif text == "2":
+        frames_per_second /= 2
 
 
 # def update_scene(screen, frame_count, move_frames,animation_frames,animation_counter,camera_x, camera_y,camera_speed):
-def update_scene(screen, frame_count, move_frames,animation_frames,animation_counter):
+def update_scene(pygame,screen, frame_count, move_frames,animation_frames,animation_counter):
     #引数は、画面自体、アニメ描画実行されるまでのフレームカウントムーブカウント、アニメ連番、カメラ座標、制御クロック
+    
 
+    global double_speed_button
+    global half_speed_button
+
+    if double_speed_button is None and half_speed_button is None:
+        font = pygame.font.Font(None, 36)
+        # タイマー倍速ボタンの作成
+        double_speed_button = Button(screen, "2x Speed", font, 100, 20, 50, 50)
+        half_speed_button = Button(screen, "0.5x Speed", font, 100, 50, 50, 50)
 
     global dirty_rect
     global game_count
@@ -296,6 +324,25 @@ def update_scene(screen, frame_count, move_frames,animation_frames,animation_cou
     # 画面上部にUIを描画
     draw_ui(screen, UI_AREA_HEIGHT)
     draw_timer(screen, UI_AREA_HEIGHT)
+    double_speed_button.draw("Black", hover_sound=hover_sound)
+    half_speed_button.draw("Black", hover_sound=hover_sound)
+    # イベント処理
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
+            # ボタンのクリック状態を更新
+            double_speed_button.draw("Black", hover_sound=hover_sound)
+            half_speed_button.draw("Black", hover_sound=hover_sound)
+            if double_speed_button.rect.collidepoint(event.pos):
+                current_speed_state="1"
+                on_click(current_speed_state)
+            if half_speed_button.rect.collidepoint(event.pos):
+                current_speed_state="2"
+                on_click(current_speed_state)
+
+
 
     #変更があった部分のrectのみdisplayに統合
     pygame.display.update(dirty_rect)
