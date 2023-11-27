@@ -116,7 +116,7 @@ def draw_tiles(screen, isometric_Width):
 
 #----------------------------------------------------------NPC
 
-
+    
 #NPCが取り得る見た目の画像セット
 npc_images = {
     'npc_type_1': {
@@ -167,8 +167,6 @@ npc_images = {
 }
 
 
-
-
 #５体のNPCが生成される
 npcs = [
     {
@@ -179,6 +177,16 @@ npcs = [
         'animation_counter': 0  
         }for _ in range(5)
         ]  #5体生成
+# NPCのHPを初期化
+for npc in npcs:
+    npc['hp'] = 100  # 初期HPを設定
+
+
+# ゲーム内時間が進むたびにHPが減少する
+def update_npc_hp():
+    for npc in npcs:
+        npc['hp'] -= 1  # 1秒ごとにHPを減少
+
 
 # すべてのnpcの行動を更新する
 def update_npcs(npcs):
@@ -272,12 +280,28 @@ def update_npcs(npcs):
 
         # すべてのnpcカウンターを0を代入
         npc['animation_counter'] = 0
+        
+        # HPが0以下になったらNPCを削除
+        if npc['hp'] <= 0:
+            npcs.remove(npc)
+
 
 
 # # 壁との衝突をチェックする関数
 # def is_wall_collision(position):
 #     # 仮の壁の位置や条件に合わせて調整する必要があります
 #     return position in [(wall_x, wall_y) for wall_x in range(WALLWIDTH) for wall_y in range(WALLHEIGHT)]
+
+def draw_hp_bar(screen, npc, isometric_Width):
+    x = (npc['position'][0] + (MAPHEIGHT - npc['position'][1])) * isometric_Width // 2 + 130
+    y = (npc['position'][0] + npc['position'][1]) * isometric_Width // 4 + 100
+
+    # HPバーの背景を描画
+    pygame.draw.rect(screen, (39, 69, 1), (x - 20, y - 10, 40, 5))
+
+    # HPバーを描画
+    hp_bar_width = int((npc['hp'] / 100) * 40)
+    pygame.draw.rect(screen, (255, 255, 255), (x - 20, y - 10, hp_bar_width, 5))
 
 
 
@@ -290,8 +314,8 @@ def draw_npcs(screen, npcs, npc_images, isometric_Width, animation_reduser):
         y = (npc['position'][0] + npc['position'][1]) * isometric_Width // 4  +100
 
 
-        #()
-            
+        # HPバーの描画
+        draw_hp_bar(screen, npc, isometric_Width) 
 
         #imageを取り出す
         animation_list = npc_images[npc['type']][npc['direction']]
@@ -418,9 +442,59 @@ def on_click(text):
         minit = 180
 
 
+#-------------------------------------------メッセージボックス
+# メッセージが点滅状態かどうかのフラグ
+message_blinking = False
+message_blink_counter = 0
 
 
+# メッセージボックスのサイズ
+MESSAGE_BOX_WIDTH = 400
+MESSAGE_BOX_HEIGHT = 100
 
+# メッセージリスト
+messages = []
+# メッセージを追加する関数
+def add_message(text):
+    messages.append(text)
+    # メッセージが一定数を超えたら古いメッセージを削除
+    if len(messages) > 5:
+        messages.pop(0)
+
+# メッセージを追加する関数
+def add_message(text):
+    messages.append(text)
+    
+    global message_blinking
+    
+    message_blinking = True  # メッセージが追加されたら点滅状態にする
+    # メッセージが一定数を超えたら古いメッセージを削除
+    if len(messages) > 5:
+        messages.pop(0)
+
+
+# メッセージボックスを描画する関数
+def draw_message_box(screen):
+    
+    global message_blinking, message_blink_counter
+     # メッセージが点滅している場合、一定の時間だけ表示/非表示を繰り返す
+    if message_blinking:
+        message_blink_counter += 1
+        if message_blink_counter >= 30:  # 30フレーム（0.5秒）で1サイクル
+            message_blink_counter = 0
+            message_blinking = False  # 点滅終了
+
+    # メッセージボックスを描画
+    pygame.draw.rect(screen, (255, 255, 255), (0, HEIGHT - MESSAGE_BOX_HEIGHT, MESSAGE_BOX_WIDTH, MESSAGE_BOX_HEIGHT))
+
+    # フォントサイズ
+    font = pygame.font.Font('font/NotoSansJP-Regular.ttf', 12)
+
+    for i, message in enumerate(messages):
+        if not message_blinking or message_blink_counter < 15:  # 点滅中は半分の周期で表示する
+            text_surface = font.render(message, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(topleft=(10, HEIGHT - MESSAGE_BOX_HEIGHT + 10 + i * 30))
+            screen.blit(text_surface, text_rect)
 #カメラ 距離
 def lerp(a, b, t):
     return a + t * (b - a)
@@ -445,7 +519,7 @@ hover_sound = load_sound("sound/hover.mp3")
 
 
 
-def update_scene(screen, frame_count):
+def update_scene(screen,font,frame_count):
     #引数は、画面自体、アニメ描画実行されるまでのフレームカウントムーブカウント、アニメ連番、カメラ座標、制御クロック
 
 
@@ -489,6 +563,10 @@ def update_scene(screen, frame_count):
         update_timer()
 
 
+        
+    # ゲーム内時間が進むごとにHPを減少させる
+    if sec_count % 60 == 0:
+        update_npc_hp()
 
     #タイマー倍率が1ならば
     if npc_update_counter == 1:
@@ -530,6 +608,13 @@ def update_scene(screen, frame_count):
             if half_speed_button.rect.collidepoint(event.pos):
                 current_speed_state="2"
                 on_click(current_speed_state)
+
+    
+    # メッセージを追加するサンプル（実際のゲーム内でのイベント発生時にこのような形で呼び出す）
+    add_message(f"{npc['type']}のダメージ: {npc['hp']}")
+
+    # メッセージボックスを描画
+    draw_message_box(screen)
 
 
 

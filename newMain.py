@@ -13,6 +13,18 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 tmr = 0
 
+# フォントの初期化
+pygame.font.init()
+
+# フォントの設定
+# font_path = os.path.join(os.path.dirname(__file__), 'font/NotoSansJP-Regular.ttf')
+# # font_path = os.path.abspath("font/NotoSansJP-Regular.ttf")
+# font = pygame.font.Font(font_path, 36)
+
+# font = pygame.font.Font(os.path.abspath("font/NotoSansJP-Regular.ttf"), 36)
+
+font = pygame.font.Font("font/NotoSansJP-Regular.ttf", 36)
+
 #ビガ
 # def apply_white_filter(surface):
 #     # サーフェスデータをNumPy配列に変換
@@ -56,11 +68,10 @@ def main():
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("経営型ゲーム")
-    font = pygame.font.Font(None, 36)
     pygame.mixer.init()
 
     global tmr
-
+    global font
     # ゲームループのフレームレートを制御するためのClockオブジェクトを作成します
     clock = pygame.time.Clock()
     # カメラの初期位置
@@ -148,7 +159,7 @@ def main():
 
         #A2 ゲームスタート後ならこうする
         elif current_game_state == "start": # フレームカウントを更新します
-                ps.update_scene(screen, frame_count)        
+                ps.update_scene(screen, font,frame_count)        
                 #print(frame_count)
 
                 #ps.update_scene(screen, frame_count,move_frames,animation_frames,animation_counter, camera_x, camera_y,camera_speed)
