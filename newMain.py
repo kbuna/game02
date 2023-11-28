@@ -11,7 +11,6 @@ from PIL import Image, ImageEnhance,ImageFilter
 # 初期設定
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-tmr = 0
 
 # フォントの初期化
 pygame.font.init()
@@ -67,6 +66,8 @@ def main():
     pygame.init()
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+   
+    #screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
     pygame.display.set_caption("経営型ゲーム")
     pygame.mixer.init()
 
@@ -98,7 +99,7 @@ def main():
     pygame.image.load("logo1.png").convert_alpha()
     ]
     img_title[0] = pygame.transform.scale(img_title[0], (SCREEN_WIDTH, SCREEN_HEIGHT))
-    #apply_white_filter(img_title[0])  # タイトル画像にフィルタ処理をかける
+    apply_white_filter(img_title[0])  # タイトル画像にフィルタ処理をかける
     #画像生成
     #desaturate("froze1.png", "froze1_desaturated2.png", brightness_factor=1.2, saturation_factor=0.7)
 
@@ -169,6 +170,21 @@ def main():
             pygame.mixer.music.stop()
             pygame.quit()
             sys.exit()
+
+
+
+    #    #画面を小さくする比率
+    #     scale_factor = 0.5  # これを調整して適切なサイズに変更
+
+    #     # 画面を小さくする
+    #     scaled_width = int(SCREEN_WIDTH * scale_factor)
+    #     scaled_height = int(SCREEN_HEIGHT * scale_factor)
+    #     scaled_screen = pygame.transform.scale(screen, (scaled_width, scaled_height))
+        # # 小さくした画面を表示
+        # pygame.display.set_mode((scaled_width, scaled_height))
+
+        # screen.blit(scaled_screen, (0, 0))
+        # pygame.display.flip()
 
         pygame.display.flip()
         clock.tick(60)#フレームレート

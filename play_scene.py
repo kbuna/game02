@@ -27,14 +27,13 @@ def draw_aurora(background, frame_count):
         # 周期の変数を大きな値にしてゆっくり目にする
         color_value = random.randint(225, 255)
         color = (color_value, color_value, color_value)
+        #極彩色
+        #color = (random.randint(100, 255), random.randint(100, 255), random.randint(100, 255))
+
         pygame.draw.line(background, color, (x, HEIGHT), (x, y), 1)
 
         #ノイズ
         #amplitude = HEIGHT / 4 * math.sin(frame_count / random.uniform(0,10000))
-
-        #極彩色
-        # # color = (random.randint(100, 255), random.randint(100, 255), random.randint(100, 255))
-
 
 def apply_dynamic_dark_filter(surface, frame_count):
     # サーフェスデータをNumPy配列に変換
@@ -426,7 +425,7 @@ half_speed_button = None
 current_speed_state="1"
 
 # NPCが移動するタイミング
-move_timing = 60
+move_timing = 40
 
 # NPCの次のコマが描かれるまでを遅滞させる
 animation_reduser = 10 
@@ -478,9 +477,12 @@ def draw_message_box(screen):
     
     global message_blinking, message_blink_counter
      # メッセージが点滅している場合、一定の時間だけ表示/非表示を繰り返す
+            
+    message_blinking = False
+
     if message_blinking:
         message_blink_counter += 1
-        if message_blink_counter >= 30:  # 30フレーム（0.5秒）で1サイクル
+        if message_blink_counter >= 50:  # 30フレーム（0.5秒）で1サイクル
             message_blink_counter = 0
             message_blinking = False  # 点滅終了
 
@@ -495,9 +497,11 @@ def draw_message_box(screen):
             text_surface = font.render(message, True, (0, 0, 0))
             text_rect = text_surface.get_rect(topleft=(10, HEIGHT - MESSAGE_BOX_HEIGHT + 10 + i * 30))
             screen.blit(text_surface, text_rect)
-#カメラ 距離
-def lerp(a, b, t):
-    return a + t * (b - a)
+
+            
+# #カメラ 距離
+# def lerp(a, b, t):
+#     return a + t * (b - a)
 
     
 #SEファイルパスを読み込む
