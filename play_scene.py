@@ -553,7 +553,7 @@ def update_scene(screen,font,frame_count):
     draw_aurora(aurora_background,frame_count)
         
     # 背景描画前に変化するフィルターをかける
-    apply_dynamic_dark_filter(aurora_background, frame_count)
+    #apply_dynamic_dark_filter(aurora_background, frame_count)
 
     # 画面に描画
     screen.blit(aurora_background, (0, 0))
